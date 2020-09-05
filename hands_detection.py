@@ -50,9 +50,7 @@ while True:
     # União da mascara
     #final = cv2.bitwise_and(frame, frame, mask=filtered)
 
-    if len(contours) == 0:
-        continue
-
+    # Verifica a maior área
     max_area=100
     ci=0	
     for i in range(len(contours)):
@@ -64,6 +62,7 @@ while True:
 
     cnts = contours[ci]
 
+    # ======================================================= #
     hull = cv2.convexHull(cnts)
 
     hull2 = cv2.convexHull(cnts, returnPoints = False)
@@ -80,9 +79,16 @@ while True:
         cv2.line(frame,start,end,[0,255,0],1)
         cv2.circle(frame,far,10,[100,255,255],3)
 
+
+    # ROI
+    x,y,w,h = cv2.boundingRect(cnts)
+    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+    roi = frame[y:y+h, x:x+w]
+
     # Mostrando
     cv2.drawContours(frame, contours, -1, (122,122,0), 3)
     cv2.imshow("detector", frame)
+    cv2.imshow("ROI", roi)
 
     key = cv2.waitKey(1)
     
