@@ -1,4 +1,6 @@
 import cv2
+
+
 import numpy as np
 
 def nothing(x):
@@ -10,13 +12,7 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 cap = cv2.VideoCapture(0)  
 
-cv2.namedWindow('trackbars')
-cv2.createTrackbar('th','trackbars',3,255,nothing)
-
 while True:
-
-    # ================= trackbars ====================== #
-    th = cv2.getTrackbarPos('th','trackbars')
 
     _, frame = cap.read()
 
@@ -75,10 +71,21 @@ while True:
         start = tuple(cnts[s][0])
         end = tuple(cnts[e][0])
         far = tuple(cnts[f][0])
-        FarDefect.append(far)
+        #FarDefect.append(far)
         cv2.line(frame,start,end,[0,255,0],1)
-        cv2.circle(frame,far,10,[100,255,255],3)
+        #cv2.circle(frame,far,10,[100,255,255],3)
 
+    moments = cv2.moments(cnts)
+    
+    if moments['m00']!=0:
+        cx = int(moments['m10']/moments['m00']) # cx = M10/M00
+        cy = int(moments['m01']/moments['m00']) # cy = M01/M00
+    centerMass=(cx,cy)    
+    
+    #Desenha o centro
+    cv2.circle(frame,centerMass,7,[100,0,255],2)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(frame,'Center',tuple(centerMass),font,2,(255,255,255),2)   
 
     # ROI
     x,y,w,h = cv2.boundingRect(cnts)
